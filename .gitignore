@@ -1,0 +1,20 @@
+node_modules
+dist
+dist-ssr
+*.local
+
+# Tauri
+src-tauri/target
+src-tauri/gen
+
+# Base de datos local (se genera en el directorio de datos de la app, esto
+# cubre el caso de que aparezca un archivo suelto durante desarrollo)
+*.db
+*.db-journal
+
+.DS_Store
+
+# Nota de contexto para retomar en otro chat: es específica de esta
+# máquina/sesión (usuario de Windows en rutas, usuario de Dexcom Share
+# usado en pruebas), no documentación pensada para el repo público.
+CONTEXT.md

@@ -1,0 +1,39 @@
+[package]
+name = "cgm-flotante"
+version = "0.1.0"
+description = "Widget flotante de monitorización de glucosa (CGM)"
+authors = ["you"]
+edition = "2021"
+rust-version = "1.77"
+
+[lib]
+name = "cgm_flotante_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-plugin-sql = { version = "2", features = ["sqlite"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+# TLS nativo (SChannel en Windows vía `native-tls`) en vez de rustls: rustls
+# arrastra el crate `ring`, que en aarch64-pc-windows-msvc necesita clang
+# instalado para compilar su parte en C. native-tls usa la pila TLS del SO,
+# sin dependencias de compilador adicionales.
+reqwest = { version = "0.12", default-features = false, features = ["json", "native-tls"] }
+# Guarda la contraseña de Dexcom Share en el almacén de credenciales del SO
+# (Windows Credential Manager / macOS Keychain / Secret Service), nunca en
+# la base SQLite en texto plano. Sin "windows-native" (no viene activado
+# por defecto en keyring 3.x) cae a un backend "mock" en memoria que no
+# persiste entre llamadas: parece guardar pero cada Entry::new() nuevo
+# empieza vacío, dando "No matching entry found" al leer justo después.
+keyring = { version = "3", features = ["windows-native"] }
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
