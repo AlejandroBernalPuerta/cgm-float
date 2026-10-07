@@ -1,8 +1,20 @@
 # CGM Flotante
 
-Widget flotante para Windows que muestra tu glucosa de **Dexcom Share** casi en tiempo real. Hecho con Tauri 2 (Rust) + React + TypeScript.
+**Una forma de ver tu glucosa en el ordenador.** Si usas un sensor continuo de glucosa Dexcom, tus lecturas suelen vivir en el móvil. CGM Flotante las trae al escritorio de Windows: un pequeño widget siempre visible (o un número en la bandeja del sistema, junto al reloj) que se actualiza solo, para echar un vistazo mientras trabajas o estudias sin sacar el teléfono.
+
+Se conecta a tu cuenta de **Dexcom Share** y muestra tu glucosa casi en tiempo real. Hecho con Tauri 2 (Rust) + React + TypeScript.
 
 > **Aviso importante:** este proyecto es un experimento personal, **no es un producto sanitario** ni está afiliado a Dexcom. No lo uses para tomar decisiones de tratamiento (dosis de insulina, etc.). Usa siempre la app y el dispositivo oficiales. Ver [Limitaciones](#limitaciones).
+
+## Cómo se ve
+
+El widget cambia de color según estés dentro o fuera de tu rango objetivo:
+
+| Dentro de rango | Fuera de rango |
+| :---: | :---: |
+| ![Widget con 112 mg/dL en verde](docs/screenshots/widget-en-rango.png) | ![Widget con 62 mg/dL en rojo](docs/screenshots/widget-fuera-de-rango.png) |
+
+*Capturas con valores de ejemplo, no son lecturas reales de nadie.*
 
 ## Qué hace
 
