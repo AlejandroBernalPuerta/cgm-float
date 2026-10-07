@@ -1,78 +1,79 @@
-# CGM Flotante
+# CGM Float
 
-**Una forma de ver tu glucosa en el ordenador.** Si usas un sensor continuo de glucosa Dexcom, tus lecturas suelen vivir en el móvil. CGM Flotante las trae al escritorio de Windows: un pequeño widget siempre visible (o un número en la bandeja del sistema, junto al reloj) que se actualiza solo, para echar un vistazo mientras trabajas o estudias sin sacar el teléfono.
+**A way to see your glucose on your computer.** If you use a Dexcom continuous glucose monitor, your readings usually live on your phone. CGM Float brings them to the Windows desktop: a small always-visible widget (or a number in the system tray, next to the clock) that updates by itself, so you can glance at it while you work or study without picking up your phone.
 
-Se conecta a tu cuenta de **Dexcom Share** y muestra tu glucosa casi en tiempo real. Hecho con Tauri 2 (Rust) + React + TypeScript.
+It connects to your **Dexcom Share** account and shows your glucose in near real time. Built with Tauri 2 (Rust) + React + TypeScript.
 
-> **Aviso importante:** este proyecto es un experimento personal, **no es un producto sanitario** ni está afiliado a Dexcom. No lo uses para tomar decisiones de tratamiento (dosis de insulina, etc.). Usa siempre la app y el dispositivo oficiales. Ver [Limitaciones](#limitaciones).
+> **Important:** this is a personal experiment. It is **not a medical device** and is not affiliated with Dexcom. Do not use it to make treatment decisions (insulin dosing, etc.). Always rely on the official app and device. See [Limitations](#limitations).
 
-## Cómo se ve
+## What it looks like
 
-El widget cambia de color según estés dentro o fuera de tu rango objetivo:
+The widget changes color depending on whether you are inside or outside your target range:
 
-| Dentro de rango | Fuera de rango |
+| In range | Out of range |
 | :---: | :---: |
-| ![Widget con 112 mg/dL en verde](docs/screenshots/widget-en-rango.png) | ![Widget con 62 mg/dL en rojo](docs/screenshots/widget-fuera-de-rango.png) |
+| ![Widget showing 112 mg/dL on a green background](docs/screenshots/widget-en-rango.png) | ![Widget showing 62 mg/dL on a red background](docs/screenshots/widget-fuera-de-rango.png) |
 
-*Capturas con valores de ejemplo, no son lecturas reales de nadie.*
+*Screenshots use example values, not anyone's real readings. The app interface is currently in Spanish (the installed app is called "CGM Flotante").*
 
-## Qué hace
+## Features
 
-- Ventana flotante sin bordes y siempre encima, que se arrastra y se redimensiona desde la esquina.
-- Muestra el valor en mg/dL, la flecha de tendencia y la hora de la última lectura. El fondo cambia de color según estés dentro o fuera del rango objetivo (por defecto 70–180 mg/dL).
-- Botón "−" para ocultarla a la bandeja del sistema; clic izquierdo en el icono de la bandeja la muestra u oculta, y el menú del clic derecho tiene "Configuración de Dexcom…" y "Salir".
-- El propio icono de la bandeja muestra el número actual (verde en rango, rojo fuera de rango), para verlo sin abrir el widget.
-- Recuerda posición y tamaño entre reinicios (SQLite local).
-- Si no hay cuenta conectada, muestra datos simulados.
+- Borderless, always-on-top floating window that you can drag and resize from the corner.
+- Shows the value in mg/dL, the trend arrow and the time of the last reading. The background color changes depending on whether you are inside or outside the target range (70–180 mg/dL by default).
+- A "−" button hides it to the system tray. A left click on the tray icon shows or hides the window, and the right-click menu has "Configuración de Dexcom…" (Dexcom settings) and "Salir" (Quit).
+- The tray icon itself shows the current number (green in range, red out of range), so you can read it without opening the widget.
+- Remembers position and size between restarts (local SQLite).
+- Shows simulated data when no account is connected.
 
-## Cómo protege tus credenciales
+## How your credentials are protected
 
-- La **contraseña** de Dexcom Share se guarda en el Administrador de Credenciales de Windows, nunca en la base de datos ni en ficheros.
-- Solo se envía por HTTPS a los servidores de Dexcom (`share2.dexcom.com` o `shareous1.dexcom.com`).
-- El **usuario** y la región sí se guardan en la base SQLite local (`%APPDATA%\com.cgmflotante.app\cgm_float.db`).
+- The Dexcom Share **password** is stored in the Windows Credential Manager, never in the database or in any file.
+- It is only sent over HTTPS to Dexcom's servers (`share2.dexcom.com` or `shareous1.dexcom.com`).
+- The **username** and region are stored in the local SQLite database (`%APPDATA%\com.cgmflotante.app\cgm_float.db`).
 
-## Requisitos para compilarlo
+## Build requirements
 
-- Windows 10/11 (con WebView2, que ya viene en Windows 11).
+- Windows 10/11 (with WebView2, which already ships with Windows 11).
 - [Node.js](https://nodejs.org/) (LTS).
 - [Rust](https://rustup.rs/) (`winget install Rustlang.Rustup`).
-- Visual Studio Build Tools con la carga de trabajo "Desarrollo de escritorio con C++". En un equipo Windows on ARM añade también el componente "MSVC ARM64 build tools".
+- Visual Studio Build Tools with the "Desktop development with C++" workload. On a Windows on ARM machine, also add the "MSVC ARM64 build tools" component.
 
-Se ha desarrollado y probado en **Windows on ARM64**. En x64 debería funcionar igual, pero no se ha probado.
+It was developed and tested on **Windows on ARM64**. It should work the same on x64, but that has not been tested.
 
-## Uso
+## Usage
 
 ```bash
 npm install
-npm run tauri dev      # modo desarrollo
-npm run tauri build    # genera los instaladores
+npm run tauri dev      # development mode
+npm run tauri build    # builds the installers
 ```
 
-Los instaladores quedan en `src-tauri/target/release/bundle/` (`msi/` y `nsis/`). No están firmados, así que Windows SmartScreen mostrará un aviso al instalarlos ("Más información" → "Ejecutar de todas formas").
+The installers end up in `src-tauri/target/release/bundle/` (`msi/` and `nsis/`). They are not code-signed, so Windows SmartScreen will show a warning when you install them ("More info" → "Run anyway").
 
-### Conectar tu cuenta de Dexcom
+### Connecting your Dexcom account
 
-1. En la app móvil de Dexcom, activa **Dexcom Share**. Según los clientes no oficiales del protocolo, normalmente hace falta tener al menos un seguidor para que se publiquen lecturas.
-2. En CGM Flotante: clic derecho en el icono de la bandeja → **Configuración de Dexcom…**.
-3. Introduce el usuario y la contraseña de esa cuenta y elige la región (Estados Unidos o fuera de Estados Unidos).
-4. Pulsa **Guardar y conectar**. Se comprueba la conexión antes de activarla.
+1. In the Dexcom mobile app, turn on **Dexcom Share**. According to the unofficial clients of the protocol, you usually need at least one follower for readings to be published.
+2. In CGM Float: right-click the tray icon → **Configuración de Dexcom…** (Dexcom settings).
+3. Enter the username and password of that account and choose the region (United States or outside the United States).
+4. Click **Guardar y conectar** (Save and connect). The connection is checked before it is activated.
 
-## Estructura
+## Project structure
 
-- `src/`: interfaz (React, Zustand). `components/`, `hooks/`, `stores/`, `lib/`.
-- `src-tauri/src/`: backend en Rust.
-  - `dexcom.rs`: cliente del protocolo Dexcom Share.
-  - `credentials.rs`: contraseña en el almacén de Windows.
-  - `tray.rs`, `tray_icon.rs`, `window.rs`: bandeja, icono dinámico y ventanas.
-  - `storage/`: migraciones SQLite.
+- `src/`: user interface (React, Zustand). `components/`, `hooks/`, `stores/`, `lib/`.
+- `src-tauri/src/`: Rust backend.
+  - `dexcom.rs`: Dexcom Share protocol client.
+  - `credentials.rs`: password storage in the Windows credential store.
+  - `tray.rs`, `tray_icon.rs`, `window.rs`: tray, dynamic icon and windows.
+  - `storage/`: SQLite migrations.
 
-## Limitaciones
+## Limitations
 
-- Usa el protocolo **no oficial y no documentado** de Dexcom Share, descubierto por la comunidad. Dexcom puede cambiarlo o bloquearlo en cualquier momento, y su uso puede no estar permitido por sus términos de servicio: revísalos antes de usarlo.
-- Dexcom Share solo actualiza cada ~5 minutos. La app consulta cada 60 s.
-- El rango objetivo (70–180) se guarda en la tabla `user_settings`, pero todavía no hay pantalla para cambiarlo.
-- No hay alarmas ni avisos sonoros.
+- It uses the **unofficial, undocumented** Dexcom Share protocol, discovered by the community. Dexcom can change or block it at any time, and using it may not be allowed by their terms of service: check them before using it.
+- Dexcom Share only updates about every 5 minutes. The app polls every 60 s.
+- The target range (70–180) is stored in the `user_settings` table, but there is no screen to change it yet.
+- There are no alarms or sound alerts.
+- The app interface is in Spanish only.
 
-## Licencia
+## License
 
 [MIT](LICENSE)
